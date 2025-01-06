@@ -11,61 +11,66 @@ on:
 jobs:
   selenium-tests:
     runs-on: ubuntu-latest
-    
+    services:
+      selenium:
+        image: selenium/standalone-chrome
+        options: --shm-size=2g
+        ports:
+          - 4444:4444
+
     permissions:
       contents: read
       packages: write
       actions: read
-    
+
     steps:
-    
-    # Step 1: Checkout the code from the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Step 1: Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Step 2: Set up Java (Java 17 in this example)
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      # Step 2: Set up Java (Java 17 in this example)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    # Step 3: Cache Maven dependencies to speed up builds
-    - name: Cache Maven dependencies
-      uses: actions/cache@v2
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
+      # Step 3: Cache Maven dependencies to speed up builds
+      - name: Cache Maven dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
-    # Step 4: Install dependencies and build the project
-    - name: Build the project with Maven
-      run: mvn clean install -DskipTests=true
+      # Step 4: Install dependencies and build the project
+      - name: Build the project with Maven
+        run: mvn clean install -DskipTests=true
 
-    # Step 5: Install Chrome and ChromeDriver
-    - name: Install Chrome and ChromeDriver
-      run: |
-        sudo apt update
-        sudo apt install -y wget
-        sudo apt install -y google-chrome-stable
-        sudo chmod +x /usr/bin/google-chrome-stable  # Ensure Chrome is executable
-        CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
-        wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
-        unzip -o chromedriver_linux64.zip -d ./driver
-        sudo chmod +x ./driver/chromedriver  # Ensure chromedriver is executable
+      # Step 5: Install Chrome and ChromeDriver
+      - name: Install Chrome and ChromeDriver
+        run: |
+          sudo apt update
+          sudo apt install -y wget
+          sudo apt install -y google-chrome-stable
+          sudo chmod +x /usr/bin/google-chrome-stable  # Ensure Chrome is executable
+          CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+          wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+          unzip -o chromedriver_linux64.zip -d ./driver
+          sudo chmod +x ./driver/chromedriver  # Ensure chromedriver is executable
 
-    # Step 6: Run Selenium Tests using Maven and TestNG
-    - name: Run Selenium Tests with Maven
-      run: mvn test -e -X
+      # Step 6: Run Selenium Tests using Maven and TestNG
+      - name: Run Selenium Tests with Maven
+        run: mvn test -e -X
 
-    # Step 7: Upload test reports as artifacts (optional)
-    - name: Upload Test Reports as Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: testng-reports
-        path: target/surefire-reports/
-        
-    # Step 8: Clean up environment
-    - name: Clean up environment
-      run: mvn clean
+      # Step 7: Upload test reports as artifacts (optional)
+      - name: Upload Test Reports as Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: testng-reports
+          path: target/surefire-reports/
+
+      # Step 8: Clean up environment
+      - name: Clean up environment
+        run: mvn clean
