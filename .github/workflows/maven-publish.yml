@@ -52,7 +52,7 @@ jobs:
         sudo chmod +x /usr/bin/google-chrome-stable  # Ensure Chrome is executable
         CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
         wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
-        unzip chromedriver_linux64.zip -d ./driver -o
+        unzip -o chromedriver_linux64.zip -d ./driver
         sudo chmod +x ./driver/chromedriver  # Ensure chromedriver is executable
 
     # Step 6: Run Selenium Tests using Maven and TestNG
