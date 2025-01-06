@@ -18,6 +18,27 @@ public class NewUserJourney {
 
 	@Test
 	public void accountCreate() {
+        // Setup Chrome options
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments(
+            "--headless", // Ensure Chrome runs in headless mode
+            "--no-sandbox", // Disable sandbox for CI
+            "--disable-dev-shm-usage", // Disable /dev/shm usage for large memory usage
+            "--remote-debugging-port=9222", // Debugging port for the browser (optional)
+            "--disable-gpu" // Disable GPU acceleration (often needed for headless)
+        );
+
+        // Initialize ChromeDriver with the options
+        WebDriver driver = new ChromeDriver(options);
+        driver.get("https://www.google.com/");
+
+        // Your test logic here
+
+        driver.quit();
+    }
+
+	
+	/*public void accountCreate() {
 
 		BrowserSetting bs = new BrowserSetting();
 
@@ -34,7 +55,7 @@ public class NewUserJourney {
 
 		driver.close();
 
-	}
+	}*/
 
 	/*
 	 * private void createAccount(WebDriver driver) { // account create //
